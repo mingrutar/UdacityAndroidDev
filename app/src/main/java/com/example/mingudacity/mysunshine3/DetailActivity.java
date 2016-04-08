@@ -9,7 +9,7 @@ import android.view.MenuItem;
 import android.widget.TextView;
 
 public class DetailActivity extends AppCompatActivity {
-
+    final static public String LOG_TAG = DetailActivity.class.getSimpleName();
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -18,10 +18,10 @@ public class DetailActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
 
         Intent intent = getIntent();
-        String action = intent.getAction();
-        String type = intent.getType();
+/*        String action = intent.getAction();           //null
+        String type = intent.getType();                 //null */
         String forecast = intent.getStringExtra(Intent.EXTRA_TEXT);
-        TextView textView = (TextView) this.findViewById(R.id.textView);
+        TextView textView = (TextView) this.findViewById(R.id.textView2);
         textView.setText(forecast);
     }
 
