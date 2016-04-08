@@ -32,6 +32,7 @@ class FetchWeatherTask extends AsyncTask<String, Void, String> {
         mForecastFragment = forecastFragment;
     }
 
+    // http://api.openweathermap.org/data/2.5/forecast/daily?q=98102&mode=json&units=imperial&cnt=7&appid=482a4276611839ba6baa850ddb7ec08c
     @Nullable
     private String getWeatherForecast(String urlString) {
         Log.v(LOG_TAG, "urlString=" + urlString);
@@ -97,21 +98,25 @@ class FetchWeatherTask extends AsyncTask<String, Void, String> {
         final String TAG_WEATHER = "weather";
         final String TAG_MAIN = "main";
         final String DATE_FORMAT = "EEE, MMM d";
-        final String RET_FORMAT = "%s - %s - %f/%f";
+        final String RET_FORMAT = "%s - %s - %.2f/%.2f";
 
+        Log.v(LOG_TAG, forecastJsonStr);
         JSONArray jarray = new JSONObject(forecastJsonStr).getJSONArray(TAG_LIST);
         String[] ret = new String[jarray.length()];
-        double maxTemp, minTemp;
         String main;
         SimpleDateFormat dateFormater = new SimpleDateFormat(DATE_FORMAT, Locale.getDefault());
         GregorianCalendar gcday = new GregorianCalendar(Locale.getDefault());
         gcday.setGregorianChange(new Date(Long.MAX_VALUE));
         for (int i = 0; i < jarray.length(); i++) {
             JSONObject dayObj = jarray.getJSONObject(i);
-            main = dayObj.getJSONObject(TAG_WEATHER).getString(TAG_MAIN);
-            maxTemp =dayObj.getJSONObject(TAG_TEMP).getDouble(TAG_MAX);
-            minTemp =dayObj.getJSONObject(TAG_TEMP).getDouble(TAG_MIN);
-            String dateStr = dateFormater.format(gcday);
+            JSONObject temperature = dayObj.getJSONObject(TAG_TEMP);
+            double maxTemp = temperature.getDouble(TAG_MAX);
+            double minTemp = temperature.getDouble(TAG_MIN);
+            Log.v(LOG_TAG, "max="+maxTemp+",min="+minTemp);
+            JSONArray jweather = dayObj.getJSONArray(TAG_WEATHER);
+            JSONObject jobj0 = jweather.getJSONObject(0);
+            main = jobj0.getString(TAG_MAIN);
+            String dateStr = dateFormater.format(gcday.getTime());
             ret[i] = String.format(RET_FORMAT, dateStr, main, maxTemp, minTemp);
             gcday.add(Calendar.DAY_OF_MONTH, 1);
         }

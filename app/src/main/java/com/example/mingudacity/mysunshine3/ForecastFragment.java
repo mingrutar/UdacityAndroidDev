@@ -4,6 +4,7 @@ import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -17,8 +18,13 @@ import java.util.Arrays;
 import java.util.List;
 
 enum OWPUnit {          //openweathermap units
-        metric,
-        imperial
+    METRIC("metric"),
+    IMPERIAL("imperial");
+
+    private String name;
+    OWPUnit(String name) {this.name = name;}
+    @Override
+    public String toString() {return name;}
 }
 
 /**
@@ -30,7 +36,7 @@ public class ForecastFragment extends Fragment {
     static final String OWMUrlBase = "http://api.openweathermap.org/data/2.5/forecast/daily";
     static final String QUERY_PARAM = "q";
     static final String FORMAT_PARAM = "mode";
-    static final String UNITS_PARAM = "unit";
+    static final String UNITS_PARAM = "units";
     static final String DAYS_PARAM = "cnt";
     static final String APPID_PARAM = "appid";
     static final String myApiKey = "482a4276611839ba6baa850ddb7ec08c";
@@ -77,13 +83,14 @@ public class ForecastFragment extends Fragment {
         int mid = item.getItemId();
         if (mid == R.id.action_refresh) {
 //            String urlString = String.format("http://api.openweathermap.org/data/2.5/forecast/daily?q=98102&mode=json&units=metric&cnt=7&appid=%s", myApiKey);
-            String urlString = buildUrl("98102", myApiKey, 7, OWPUnit.imperial);
+            String urlString = buildUrl("98102", myApiKey, 7, OWPUnit.IMPERIAL);
             new FetchWeatherTask(this).execute(urlString);
             return true;
         }
         return super.onOptionsItemSelected(item);
     }
     /*
+    // http://api.openweathermap.org/data/2.5/forecast/daily?q=98102&mode=json&units=imperial&cnt=7&appid=482a4276611839ba6baa850ddb7ec08c
       String.format("http://api.openweathermap.org/data/2.5/forecast/daily?" +
                     "q=98102&mode=json&units=metric&cnt=7&appid=%s", apiKey);
       if use apache URIBuilder:
@@ -97,6 +104,7 @@ public class ForecastFragment extends Fragment {
                 .appendQueryParameter(UNITS_PARAM, unit.toString())
                 .appendQueryParameter(DAYS_PARAM, Integer.toString(numDays))
                 .appendQueryParameter(APPID_PARAM, apiKey).build();
+        Log.v(LOG_TAG, buildUri.toString());
         return buildUri.toString();
     }
 
