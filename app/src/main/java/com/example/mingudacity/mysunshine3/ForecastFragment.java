@@ -4,7 +4,6 @@ import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -42,7 +41,6 @@ public class ForecastFragment extends Fragment {
     static final String myApiKey = "482a4276611839ba6baa850ddb7ec08c";
 
     String mforecastData;
-    List<String> mForecastItems;
     ArrayAdapter<String> mAdapter;
     static String[] testData = new String[] {"Today - Sunny - 88/63",
             "Tomorrow - Foggy - 78/53",
@@ -51,24 +49,26 @@ public class ForecastFragment extends Fragment {
             "Fri - Foggy - 70/49",
             "Sat - Sunny - 76/68"};
 
-    public ForecastFragment() {
-        mForecastItems = Arrays.asList( testData );
-    }
     @Override
     public void onCreate(Bundle savedInstance) {
         super.onCreate(savedInstance);
         setHasOptionsMenu(true);
     }
-
+    public ArrayAdapter<String>  getAdapter() {
+        return mAdapter;
+    }
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_main, container, false);
         Context context = getActivity();
+        // if items is passed in ctor, the Arrays.asList is stored but it is immutable, so clear() fails
+        ///List<String> items = new ArrayList <String>( Arrays.asList(testData));
+        List<String> items = Arrays.asList(testData);
         mAdapter = new ArrayAdapter<>(context,
                 R.layout.list_item_forecast,        //file name of list view layout (textView here)
-                R.id.list_item_forecast_textview,   //textView id
-                mForecastItems);                     //List of testData
+                R.id.list_item_forecast_textview);   //textView id
+        mAdapter.addAll(items);
         ListView listView = (ListView) rootView.findViewById(R.id.listview_forecast);
         listView.setAdapter(mAdapter);
         return rootView;
@@ -104,7 +104,6 @@ public class ForecastFragment extends Fragment {
                 .appendQueryParameter(UNITS_PARAM, unit.toString())
                 .appendQueryParameter(DAYS_PARAM, Integer.toString(numDays))
                 .appendQueryParameter(APPID_PARAM, apiKey).build();
-        Log.v(LOG_TAG, buildUri.toString());
         return buildUri.toString();
     }
 

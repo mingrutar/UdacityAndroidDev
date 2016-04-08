@@ -3,6 +3,7 @@ package com.example.mingudacity.mysunshine3;
 import android.os.AsyncTask;
 import android.support.annotation.Nullable;
 import android.util.Log;
+import android.widget.ArrayAdapter;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -15,15 +16,17 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.List;
 import java.util.Locale;
 
 /**
  * Created by linna on 4/7/2016.
  */
-class FetchWeatherTask extends AsyncTask<String, Void, String> {
+class FetchWeatherTask extends AsyncTask<String, Void, String[]> {
 
     private ForecastFragment mForecastFragment;
     private final String LOG_TAG = FetchWeatherTask.class.getSimpleName();
@@ -98,9 +101,9 @@ class FetchWeatherTask extends AsyncTask<String, Void, String> {
         final String TAG_WEATHER = "weather";
         final String TAG_MAIN = "main";
         final String DATE_FORMAT = "EEE, MMM d";
-        final String RET_FORMAT = "%s - %s - %.2f/%.2f";
+        final String RET_FORMAT = "%s - %s - %.0f/%.0f";
 
-        Log.v(LOG_TAG, forecastJsonStr);
+//        Log.v(LOG_TAG, forecastJsonStr);
         JSONArray jarray = new JSONObject(forecastJsonStr).getJSONArray(TAG_LIST);
         String[] ret = new String[jarray.length()];
         String main;
@@ -112,7 +115,6 @@ class FetchWeatherTask extends AsyncTask<String, Void, String> {
             JSONObject temperature = dayObj.getJSONObject(TAG_TEMP);
             double maxTemp = temperature.getDouble(TAG_MAX);
             double minTemp = temperature.getDouble(TAG_MIN);
-            Log.v(LOG_TAG, "max="+maxTemp+",min="+minTemp);
             JSONArray jweather = dayObj.getJSONArray(TAG_WEATHER);
             JSONObject jobj0 = jweather.getJSONObject(0);
             main = jobj0.getString(TAG_MAIN);
@@ -123,22 +125,22 @@ class FetchWeatherTask extends AsyncTask<String, Void, String> {
         return ret;
      }
     @Override
-    protected String doInBackground(String... params) {
-        String paramInfo = String.format("#params=%d, [0]=$s", params.length, params[0]);
-        Log.v(LOG_TAG, paramInfo);
-        return getWeatherForecast(params[0]);
-    }
-
-    @Override
-    protected void onPostExecute(String result) {
+    protected String[] doInBackground(String... params) {
+        String ret = getWeatherForecast(params[0]);
+        String[] results = null;
         try {
-//            mForecastFragment.mforecastData = result;
-            String[] results = getWeatherDataFronJson(result, 7);
-            for (String str : results) {
-                Log.v(LOG_TAG, str);
-            }
+            results = getWeatherDataFronJson(ret, 7);
         } catch (JSONException je) {
             Log.e(LOG_TAG, "Error", je);
         }
+        return results;
+    }
+
+    @Override
+    protected void onPostExecute(String[] result) {
+        List<String> newData = Arrays.asList(result);
+        ArrayAdapter<String> adapter =  mForecastFragment.getAdapter();
+        adapter.clear();
+        adapter.addAll(newData);
     }
 }
