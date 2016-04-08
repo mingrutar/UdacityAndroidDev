@@ -2,11 +2,8 @@ package com.example.mingudacity.mysunshine3;
 
 import android.content.Context;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -16,12 +13,6 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.util.Arrays;
 import java.util.List;
 
@@ -87,7 +78,7 @@ public class ForecastFragment extends Fragment {
         if (mid == R.id.action_refresh) {
 //            String urlString = String.format("http://api.openweathermap.org/data/2.5/forecast/daily?q=98102&mode=json&units=metric&cnt=7&appid=%s", myApiKey);
             String urlString = buildUrl("98102", myApiKey, 7, OWPUnit.imperial);
-            new FetchWeatherTask().execute(urlString);
+            new FetchWeatherTask(this).execute(urlString);
             return true;
         }
         return super.onOptionsItemSelected(item);
@@ -108,73 +99,5 @@ public class ForecastFragment extends Fragment {
                 .appendQueryParameter(APPID_PARAM, apiKey).build();
         return buildUri.toString();
     }
-   class FetchWeatherTask extends AsyncTask<String, Void, String> {
 
-        private final String LOG_TAG = FetchWeatherTask.class.getSimpleName();
-        @Nullable private String getWeatherForecast(String urlString) {
-            Log.v(LOG_TAG,"urlString="+urlString);
-            // These two need to be declared outside the try/catch
-            // so that they can be closed in the finally block.
-            HttpURLConnection httpConnection = null;    // android API vs HTTPClient
-            BufferedReader reader = null;
-            // Will contain the raw JSON response as a string.
-            String forecastJsonStr = null;
-
-            try {
-                // Construct the URL for the OpenWeatherMap query
-                // Possible parameters are avaiable at OWM's forecast API page, at
-                // http://openweathermap.org/API#forecast
-
-                // Create the request to OpenWeatherMap, and open the connection
-                httpConnection = (HttpURLConnection) new URL(urlString).openConnection();
-                httpConnection.setRequestMethod("GET");
-                httpConnection.connect();
-
-                // Read the input stream into a String
-                InputStream inputStream = httpConnection.getInputStream();
-                if (inputStream != null) {
-                    StringBuilder buffer = new StringBuilder();
-                    reader = new BufferedReader(new InputStreamReader(inputStream));
-                    String line;
-                    while ((line = reader.readLine()) != null) {
-                        // Since it's JSON, adding a newline isn't necessary (it won't affect parsing)
-                        // But it does make debugging a *lot* easier if you print out the completed
-                        // buffer for debugging.
-                        buffer.append(line).append("\n");
-                    }
-                    if (buffer.length() != 0) {
-                        forecastJsonStr = buffer.toString();
-                    }
-                }
-            } catch (IOException e) {
-                Log.e(LOG_TAG, "Error ", e);
-                // If the code didn't successfully get the weather data, there's no point in attemping
-                // to parse it.
-            } finally{
-                if (httpConnection != null) {
-                    httpConnection.disconnect();
-                }
-                if (reader != null) {
-                    try {
-                        reader.close();
-                    } catch (final IOException e) {
-                        Log.e("PlaceholderFragment", "Error closing stream", e);
-                    }
-                }
-            }
-            return forecastJsonStr;
-        }
-
-        @Override
-        protected String doInBackground(String... params) {
-            String paramInfo = String.format("#params=%d, [0]=$s", params.length, params[0]);
-            Log.v(LOG_TAG, paramInfo);
-            return getWeatherForecast(params[0]);
-        }
-        @Override
-        protected void onPostExecute(String result) {
-            mforecastData = result;
-            Log.v(LOG_TAG, "mforecastData: "+mforecastData);
-        }
-    }
 }
