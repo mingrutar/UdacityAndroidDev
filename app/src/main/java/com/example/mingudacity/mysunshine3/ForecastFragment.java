@@ -1,6 +1,7 @@
 package com.example.mingudacity.mysunshine3;
 
 import android.content.Context;
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -13,7 +14,6 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
-import android.widget.Toast;
 
 import java.util.Arrays;
 import java.util.List;
@@ -59,6 +59,7 @@ public class ForecastFragment extends Fragment {
     public ArrayAdapter<String>  getAdapter() {
         return mAdapter;
     }
+    ;
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -76,8 +77,11 @@ public class ForecastFragment extends Fragment {
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                String item =  mAdapter.getItem(position);
-                Toast.makeText(getContext(), "I am clicked: "+item, Toast.LENGTH_LONG).show();
+                String forecast =  mAdapter.getItem(position);
+                Intent detailIntent  = new Intent(getContext(), DetailActivity.class);
+                detailIntent.putExtra(Intent.EXTRA_TEXT, forecast);
+//                detailIntent.putExtra("position", position);
+                startActivity(detailIntent);
             }
         });
         return rootView;
