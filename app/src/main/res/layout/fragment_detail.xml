@@ -13,13 +13,13 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:id="@+id/detail_textView"
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:text="@string/detail_view_text"
-        android:id="@+id/textView2"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="169dp"
         android:textStyle="bold"
-        android:textColor="#11b440"
+        android:textColor="#7616c1"
         android:gravity="center_vertical|center"/>
 </RelativeLayout>
