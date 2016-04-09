@@ -20,7 +20,6 @@ import android.widget.ListView;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 
 enum OWPUnit {          //openweathermap units
     METRIC("metric"),
@@ -118,14 +117,16 @@ public class ForecastFragment extends Fragment {
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getContext());
         String locationKey = getString(R.string.pref_location_key);
         String locationDefault = getString(R.string.pref_location_default);
-        Map<String, ?> allKey = preferences.getAll();
+        String zip = preferences.getString(locationKey, locationDefault);
+        Log.v(LOG_TAG, String.format("locationKey=%s,default=%s, zip=%s", locationKey, locationDefault, zip));
+/*        Map<String, ?> allKey = preferences.getAll();
         String zip = locationDefault;
         if (allKey.containsKey(locationKey)) {
             zip = (String) allKey.get(locationKey);
             Log.v(LOG_TAG, String.format("locationKey=%s,default=%s, Map.zip=%s", locationKey,locationDefault,zip));
         }else {
             Log.v(LOG_TAG, String.format("locationKey=%s,default=%s, NO Map.zip", locationKey,locationDefault));
-        }
+        } */
         Uri buildUri = Uri.parse(OWMUrlBase).buildUpon()
                 .appendQueryParameter(QUERY_PARAM, zip)
                 .appendQueryParameter(FORMAT_PARAM, "json")
