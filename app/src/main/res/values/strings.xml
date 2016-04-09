@@ -1,9 +1,14 @@
 <resources>
     <string name="app_name">My Sunshine 3</string>
-    <string name="action_settings">Settings</string>
+    <string name="title_activity_detail">Detail Activity</string>
+    <string name="title_action_settings">Settings</string>
     <string name="action_refresh" translatable="false">Refresh</string>
     <string name="firstLine">Today - Sunny - 88/63</string>
-    <string name="title_activity_detail">DetailActivity</string>
-    <string name="title_activity_main2">Main2Activity</string>
     <string name="detail_view_text">I am Detail Activity</string>
+    <!-- Lable for the location preference [CHAR LIMIT=30] -->
+    <string name="pref_location_label">Location</string>
+    <!-- Key name for storing location in SharedPreferences [CHAR LIMIT=NONE] -->
+    <string name="pref_location_key">location</string>
+    <!-- Default postal code for location preference [CHAR LIMIT=NONE] -->
+    <string name="pref_location_default">98102</string>
 </resources>

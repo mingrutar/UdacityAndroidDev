@@ -1,5 +1,6 @@
 package com.example.mingudacity.mysunshine3;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -29,6 +30,8 @@ public class DetailActivity extends AppCompatActivity {
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
         if (id == R.id.action_settings) {
+            Intent settingIntent  = new Intent(this, SettingsActivity.class);
+            startActivity(settingIntent);
             return true;
         }
         return super.onOptionsItemSelected(item);
