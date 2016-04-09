@@ -2,12 +2,10 @@ package com.example.mingudacity.mysunshine3;
 
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -98,42 +96,37 @@ public class ForecastFragment extends Fragment {
     public boolean onOptionsItemSelected (MenuItem item) {
         int mid = item.getItemId();
         if (mid == R.id.action_refresh) {
-//            String urlString = String.format("http://api.openweathermap.org/data/2.5/forecast/daily?q=98102&mode=json&units=metric&cnt=7&appid=%s", myApiKey);
-            String urlString = buildUrl( myApiKey, 7, OWPUnit.IMPERIAL);
-            new FetchWeatherTask(this).execute(urlString);
+            updateWeather();
             return true;
         }
         return super.onOptionsItemSelected(item);
     }
+
+    @Override
+    public void onStart() {
+        updateWeather();
+        super.onStart();
+    }
+
     /*
-    // http://api.openweathermap.org/data/2.5/forecast/daily?q=98102&mode=json&units=imperial&cnt=7&appid=482a4276611839ba6baa850ddb7ec08c
-      String.format("http://api.openweathermap.org/data/2.5/forecast/daily?" +
-                    "q=98102&mode=json&units=metric&cnt=7&appid=%s", apiKey);
-      if use apache URIBuilder:
-        URI buildUri=new URIBuilder(OWMUrlBase).addParameter(FORMAT_PARAM, "json")...build();
-        add to build.gradle 'compile group: "org.apache.httpcomponents' , name: 'httpclient-android' , version: '4.3.5.1'"
-    */
-    private String buildUrl(String apiKey, int numDays, OWPUnit unit ) {
-        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getContext());
-        String locationKey = getString(R.string.pref_location_key);
-        String locationDefault = getString(R.string.pref_location_default);
-        String zip = preferences.getString(locationKey, locationDefault);
-        Log.v(LOG_TAG, String.format("locationKey=%s,default=%s, zip=%s", locationKey, locationDefault, zip));
-/*        Map<String, ?> allKey = preferences.getAll();
-        String zip = locationDefault;
-        if (allKey.containsKey(locationKey)) {
-            zip = (String) allKey.get(locationKey);
-            Log.v(LOG_TAG, String.format("locationKey=%s,default=%s, Map.zip=%s", locationKey,locationDefault,zip));
-        }else {
-            Log.v(LOG_TAG, String.format("locationKey=%s,default=%s, NO Map.zip", locationKey,locationDefault));
-        } */
+        // http://api.openweathermap.org/data/2.5/forecast/daily?q=98102&mode=json&units=imperial&cnt=7&appid=482a4276611839ba6baa850ddb7ec08c
+          String.format("http://api.openweathermap.org/data/2.5/forecast/daily?" +
+                        "q=98102&mode=json&units=metric&cnt=7&appid=%s", apiKey);
+          if use apache URIBuilder:
+            URI buildUri=new URIBuilder(OWMUrlBase).addParameter(FORMAT_PARAM, "json")...build();
+            add to build.gradle 'compile group: "org.apache.httpcomponents' , name: 'httpclient-android' , version: '4.3.5.1'"
+        */
+    private void updateWeather() {
+        String zip = PreferenceManager.getDefaultSharedPreferences(getContext())
+                .getString(getString(R.string.pref_location_key), getString(R.string.pref_location_default));
+        OWPUnit unit = OWPUnit.IMPERIAL;
+        int numDays = 7;
         Uri buildUri = Uri.parse(OWMUrlBase).buildUpon()
                 .appendQueryParameter(QUERY_PARAM, zip)
                 .appendQueryParameter(FORMAT_PARAM, "json")
                 .appendQueryParameter(UNITS_PARAM, unit.toString())
                 .appendQueryParameter(DAYS_PARAM, Integer.toString(numDays))
-                .appendQueryParameter(APPID_PARAM, apiKey).build();
-        return buildUri.toString();
+                .appendQueryParameter(APPID_PARAM, myApiKey).build();
+        new FetchWeatherTask(this).execute(buildUri.toString());
     }
-
 }
