@@ -1,12 +1,10 @@
 package com.example.mingudacity.mysunshine3;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.TextView;
 
 public class DetailActivity extends AppCompatActivity {
     final static public String LOG_TAG = DetailActivity.class.getSimpleName();
@@ -17,14 +15,7 @@ public class DetailActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        Intent intent = getIntent();
-/*        String action = intent.getAction();           //null
-        String type = intent.getType();                 //null */
-        String forecast = intent.getStringExtra(Intent.EXTRA_TEXT);
-        TextView textView = (TextView) this.findViewById(R.id.textView2);
-        textView.setText(forecast);
     }
-
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.detail, menu);
