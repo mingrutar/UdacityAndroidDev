@@ -11,4 +11,7 @@
     <string name="pref_location_key">location</string>
     <!-- Default postal code for location preference [CHAR LIMIT=NONE] -->
     <string name="pref_location_default">98102</string>
+    <string name="title_temperature_unit">Temperature Unit</string>
+    <string name="pref_unit_key">pref_unit_key</string>
+    <string name="pref_unit_default_value">metric</string>
 </resources>

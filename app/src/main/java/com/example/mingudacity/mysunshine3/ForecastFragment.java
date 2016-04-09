@@ -2,6 +2,7 @@ package com.example.mingudacity.mysunshine3;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -19,15 +20,6 @@ import android.widget.ListView;
 import java.util.Arrays;
 import java.util.List;
 
-enum OWPUnit {          //openweathermap units
-    METRIC("metric"),
-    IMPERIAL("imperial");
-
-    private String name;
-    OWPUnit(String name) {this.name = name;}
-    @Override
-    public String toString() {return name;}
-}
 
 /**
  * A placeholder fragment containing a simple view.
@@ -78,8 +70,8 @@ public class ForecastFragment extends Fragment {
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                String forecast =  mAdapter.getItem(position);
-                Intent detailIntent  = new Intent(getContext(), DetailActivity.class);
+                String forecast = mAdapter.getItem(position);
+                Intent detailIntent = new Intent(getContext(), DetailActivity.class);
                 detailIntent.putExtra(Intent.EXTRA_TEXT, forecast);
 //                detailIntent.putExtra("position", position);
                 startActivity(detailIntent);
@@ -117,14 +109,15 @@ public class ForecastFragment extends Fragment {
             add to build.gradle 'compile group: "org.apache.httpcomponents' , name: 'httpclient-android' , version: '4.3.5.1'"
         */
     private void updateWeather() {
-        String zip = PreferenceManager.getDefaultSharedPreferences(getContext())
-                .getString(getString(R.string.pref_location_key), getString(R.string.pref_location_default));
-        OWPUnit unit = OWPUnit.IMPERIAL;
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getContext());
+        String zip = sharedPreferences.getString(getString(R.string.pref_location_key), getString(R.string.pref_location_default));
+        String unit = sharedPreferences.getString(getString(R.string.pref_unit_key), getString(R.string.pref_unit_default_value));
+
         int numDays = 7;
         Uri buildUri = Uri.parse(OWMUrlBase).buildUpon()
                 .appendQueryParameter(QUERY_PARAM, zip)
                 .appendQueryParameter(FORMAT_PARAM, "json")
-                .appendQueryParameter(UNITS_PARAM, unit.toString())
+                .appendQueryParameter(UNITS_PARAM, unit)
                 .appendQueryParameter(DAYS_PARAM, Integer.toString(numDays))
                 .appendQueryParameter(APPID_PARAM, myApiKey).build();
         new FetchWeatherTask(this).execute(buildUri.toString());

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="unitListNames">
+        <item>Use Metric</item>
+        <item>Use Imperial</item>
+    </string-array>
+    <string-array name="unitListValue">
+        <item>metric</item>
+        <item>imperial</item>
+    </string-array>
+</resources>
