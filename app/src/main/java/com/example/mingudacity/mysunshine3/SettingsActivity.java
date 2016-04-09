@@ -15,11 +15,10 @@ public class SettingsActivity extends PreferenceActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         // Add 'general' preferences, defined in the XML file
-        // TODO: Add preferences from XML
-
+        addPreferencesFromResource(R.xml.pref_general);    //Add preferences from XML
         // For all preferences, attach an OnPreferenceChangeListener so the UI summary can be
         // updated when the preference changes.
-        // TODO: Add preferences
+        bindPreferenceSummaryToValue(findPreference(getString(R.string.pref_location_key)));
     }
 
     @Override
@@ -31,8 +30,8 @@ public class SettingsActivity extends PreferenceActivity
             ListPreference listPreference = (ListPreference) preference;
             int prefIndex = listPreference.findIndexOfValue(stringValue);
             if (prefIndex < 0) {    // other preferences, set the summary to the value's simple string representation.
-                preference.setSummary(stringValue);
-            } else {                // our preference
+                preference.setSummary(stringValue);  // we have EditTextPreference@pref_general.xml
+            } else {                // our preference is ListView
                 preference.setSummary(listPreference.getEntries()[prefIndex]);
             }
         }
