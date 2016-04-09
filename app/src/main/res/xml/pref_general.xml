@@ -11,7 +11,7 @@
         android:title="@string/title_temperature_unit"
         android:key="@string/pref_unit_key"
         android:summary="Metric temperature unit"
-        android:defaultValue="@string/pref_unit_default_value"
+        android:defaultValue="@string/pref_unit_metric"
         android:entries="@array/unitListNames"
         android:entryValues="@array/unitListValue"/>
 </PreferenceScreen>

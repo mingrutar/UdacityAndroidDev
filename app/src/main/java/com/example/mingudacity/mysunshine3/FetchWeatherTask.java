@@ -3,7 +3,6 @@ package com.example.mingudacity.mysunshine3;
 import android.os.AsyncTask;
 import android.support.annotation.Nullable;
 import android.util.Log;
-import android.widget.ArrayAdapter;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -27,9 +26,18 @@ import java.util.Locale;
  * Created by linna on 4/7/2016.
  */
 class FetchWeatherTask extends AsyncTask<String, Void, String[]> {
-
     private ForecastFragment mForecastFragment;
     private final String LOG_TAG = FetchWeatherTask.class.getSimpleName();
+    // string for rsponse json
+    static final String TAG_LIST = "list";
+    static final String TAG_TEMP = "temp";
+    static final String TAG_MAX = "max";
+    static final String TAG_MIN = "min";
+    static final String TAG_WEATHER = "weather";
+    static final String TAG_MAIN = "main";
+    // data formatter
+    static final String DATE_FORMAT = "EEE, MMM d";
+    static final String RET_FORMAT = "%s - %s - %s";
 
     public FetchWeatherTask(ForecastFragment forecastFragment) {
         mForecastFragment = forecastFragment;
@@ -90,46 +98,49 @@ class FetchWeatherTask extends AsyncTask<String, Void, String[]> {
         }
         return forecastJsonStr;
     }
-
     private String[] getWeatherDataFronJson(String forecastJsonStr, int daynum)
-        throws JSONException {
-
-        final String TAG_LIST = "list";
-        final String TAG_TEMP = "temp";
-        final String TAG_MAX = "max";
-        final String TAG_MIN = "min";
-        final String TAG_WEATHER = "weather";
-        final String TAG_MAIN = "main";
-        final String DATE_FORMAT = "EEE, MMM d";
-        final String RET_FORMAT = "%s - %s - %.0f/%.0f";
-
+            throws JSONException {
 //        Log.v(LOG_TAG, forecastJsonStr);
         JSONArray jarray = new JSONObject(forecastJsonStr).getJSONArray(TAG_LIST);
         String[] ret = new String[jarray.length()];
-        String main;
         SimpleDateFormat dateFormater = new SimpleDateFormat(DATE_FORMAT, Locale.getDefault());
+        String unitType = mForecastFragment.getPrefUnitType();
         GregorianCalendar gcday = new GregorianCalendar(Locale.getDefault());
         gcday.setGregorianChange(new Date(Long.MAX_VALUE));
         for (int i = 0; i < jarray.length(); i++) {
             JSONObject dayObj = jarray.getJSONObject(i);
             JSONObject temperature = dayObj.getJSONObject(TAG_TEMP);
-            double maxTemp = temperature.getDouble(TAG_MAX);
-            double minTemp = temperature.getDouble(TAG_MIN);
+            double highTemp = temperature.getDouble(TAG_MAX);
+            double lowTemp = temperature.getDouble(TAG_MIN);
             JSONArray jweather = dayObj.getJSONArray(TAG_WEATHER);
             JSONObject jobj0 = jweather.getJSONObject(0);
-            main = jobj0.getString(TAG_MAIN);
+            String main = jobj0.getString(TAG_MAIN);
             String dateStr = dateFormater.format(gcday.getTime());
-            ret[i] = String.format(RET_FORMAT, dateStr, main, maxTemp, minTemp);
+            String highLow = formatHighLows(highTemp, lowTemp, unitType);
+            ret[i] = String.format(RET_FORMAT, dateStr, main, highLow);
             gcday.add(Calendar.DAY_OF_MONTH, 1);
         }
         return ret;
-     }
+    }
+
+    public String formatHighLows(double max, double min, String unitType) {
+        if (unitType == mForecastFragment.getString(R.string.pref_unit_imperial)) {
+            max = (max * 1.8) + 32;
+            min = (min * 1.8) + 32;
+        } else if (unitType != mForecastFragment.getString(R.string.pref_unit_metric)) {
+            String message = "unknown unit" + unitType;
+            Log.d(LOG_TAG, message);
+            return message;
+        }
+        return String.format("%d/%d", Math.round(max), Math.round(min));
+    }
+
     @Override
     protected String[] doInBackground(String... params) {
-        String ret = getWeatherForecast(params[0]);
         String[] results = null;
         try {
-            results = getWeatherDataFronJson(ret, 7);
+            String ret = getWeatherForecast(params[0]);
+            results  = getWeatherDataFronJson(ret, 7);
         } catch (JSONException je) {
             Log.e(LOG_TAG, "Error", je);
         }
@@ -138,9 +149,9 @@ class FetchWeatherTask extends AsyncTask<String, Void, String[]> {
 
     @Override
     protected void onPostExecute(String[] result) {
-        List<String> newData = Arrays.asList(result);
-        ArrayAdapter<String> adapter =  mForecastFragment.getAdapter();
-        adapter.clear();
-        adapter.addAll(newData);
+        if (result != null) {
+            List<String> newData = Arrays.asList(result);
+            mForecastFragment.updateAdapter(newData);
+        }
     }
 }

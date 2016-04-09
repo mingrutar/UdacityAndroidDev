@@ -35,7 +35,6 @@ public class ForecastFragment extends Fragment {
     static final String APPID_PARAM = "appid";
     static final String myApiKey = "482a4276611839ba6baa850ddb7ec08c";
 
-    String mforecastData;
     ArrayAdapter<String> mAdapter;
     static String[] testData = new String[] {"Today - Sunny - 88/63",
             "Tomorrow - Foggy - 78/53",
@@ -43,6 +42,7 @@ public class ForecastFragment extends Fragment {
             "Thurs - Rainy - 68/51",
             "Fri - Foggy - 70/49",
             "Sat - Sunny - 76/68"};
+
 
     @Override
     public void onCreate(Bundle savedInstance) {
@@ -100,6 +100,10 @@ public class ForecastFragment extends Fragment {
         super.onStart();
     }
 
+    void updateAdapter(List<String> newData) {
+        mAdapter.clear();
+        mAdapter.addAll(newData);
+   }
     /*
         // http://api.openweathermap.org/data/2.5/forecast/daily?q=98102&mode=json&units=imperial&cnt=7&appid=482a4276611839ba6baa850ddb7ec08c
           String.format("http://api.openweathermap.org/data/2.5/forecast/daily?" +
@@ -111,15 +115,21 @@ public class ForecastFragment extends Fragment {
     private void updateWeather() {
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getContext());
         String zip = sharedPreferences.getString(getString(R.string.pref_location_key), getString(R.string.pref_location_default));
-        String unit = sharedPreferences.getString(getString(R.string.pref_unit_key), getString(R.string.pref_unit_default_value));
+        String unit = getString(R.string.pref_unit_metric);
 
         int numDays = 7;
         Uri buildUri = Uri.parse(OWMUrlBase).buildUpon()
                 .appendQueryParameter(QUERY_PARAM, zip)
                 .appendQueryParameter(FORMAT_PARAM, "json")
-                .appendQueryParameter(UNITS_PARAM, unit)
+                .appendQueryParameter(UNITS_PARAM, unit)  //we always get metric
                 .appendQueryParameter(DAYS_PARAM, Integer.toString(numDays))
                 .appendQueryParameter(APPID_PARAM, myApiKey).build();
         new FetchWeatherTask(this).execute(buildUri.toString());
+    }
+
+    //FetchWeatherTask cannot access getContext or getActivity
+    public String getPrefUnitType() {
+        return PreferenceManager.getDefaultSharedPreferences(getContext())
+                .getString(getString(R.string.pref_unit_key), getString(R.string.pref_unit_metric));
     }
 }

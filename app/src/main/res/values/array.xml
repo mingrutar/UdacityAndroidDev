@@ -5,7 +5,7 @@
         <item>Use Imperial</item>
     </string-array>
     <string-array name="unitListValue">
-        <item>metric</item>
-        <item>imperial</item>
+        <item>@string/pref_unit_metric</item>
+        <item>@string/pref_unit_imperial</item>
     </string-array>
 </resources>

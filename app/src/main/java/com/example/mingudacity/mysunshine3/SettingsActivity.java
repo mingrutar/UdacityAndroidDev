@@ -18,7 +18,7 @@ public class SettingsActivity extends PreferenceActivity
         addPreferencesFromResource(R.xml.pref_general);    //Add preferences from XML
         // For all preferences, attach an OnPreferenceChangeListener so the UI summary can be
         // updated when the preference changes.
-        bindPreferenceSummaryToValue(findPreference(getString(R.string.pref_location_key)));
+//        bindPreferenceSummaryToValue(findPreference(getString(R.string.pref_location_key)));
         for (int pref_key : new int[] {R.string.pref_location_key, R.string.pref_unit_key} ) {
             bindPreferenceSummaryToValue(pref_key);
         }
@@ -44,6 +44,11 @@ public class SettingsActivity extends PreferenceActivity
         return true;        // tell it to update
     }
 
+    /***
+     * Attaches a listener so the summary is always updated with the preference value.
+     * Also fires the listener once, to initialize the summary (so it shows up before the value
+     * is changed.
+     */
     private void bindPreferenceSummaryToValue(int pref_key_id) {
         Preference pref = findPreference (getString(pref_key_id));
         pref.setOnPreferenceChangeListener(this);
@@ -51,21 +56,17 @@ public class SettingsActivity extends PreferenceActivity
                 .getDefaultSharedPreferences(pref.getContext())
                 .getString(pref.getKey(), ""));
     }
-    /** in use?
-     * Attaches a listener so the summary is always updated with the preference value.
-     * Also fires the listener once, to initialize the summary (so it shows up before the value
-     * is changed.)
-     */
-    private void bindPreferenceSummaryToValue(Preference preference) {
-        // Set the listener to watch for value changes.
-        preference.setOnPreferenceChangeListener(this);
-
-        // Trigger the listener immediately with the preference's
-        // current value.
-        onPreferenceChange(preference,
-                PreferenceManager
-                        .getDefaultSharedPreferences(preference.getContext())
-                        .getString(preference.getKey(), ""));
-    }
-
+    //
+//private void bindPreferenceSummaryToValue(Preference preference) {
+//// Set the listener to watch for value changes.
+//preference.setOnPreferenceChangeListener(this);
+//
+//// Trigger the listener immediately with the preference's
+//// current value.
+//onPreferenceChange(preference,
+//PreferenceManager
+//.getDefaultSharedPreferences(preference.getContext())
+//.getString(preference.getKey(), ""));
+//}
+//
 }
